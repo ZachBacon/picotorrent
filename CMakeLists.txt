@@ -3,8 +3,8 @@ cmake_policy(SET CMP0092 NEW) # don't add /W3 as default
 cmake_policy(SET CMP0115 OLD) # Source file extensions must be explicit.
 
 # set(VCPKG_OVERLAY_PORTS    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/vcpkg-overlays/ports)
-set(VCPKG_OVERLAY_TRIPLETS ${CMAKE_CURRENT_SOURCE_DIR}/vendor/vcpkg-overlays/triplets)
-set(CMAKE_TOOLCHAIN_FILE   ${CMAKE_CURRENT_SOURCE_DIR}/vendor/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
+#set(VCPKG_OVERLAY_TRIPLETS ${CMAKE_CURRENT_SOURCE_DIR}/vendor/vcpkg-overlays/triplets)
+#set(CMAKE_TOOLCHAIN_FILE   ${CMAKE_CURRENT_SOURCE_DIR}/vendor/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 
 project("PicoTorrent")
 
@@ -32,18 +32,18 @@ find_package(Boost                      REQUIRED COMPONENTS log)
 find_package(fmt                 CONFIG REQUIRED)
 find_package(LibtorrentRasterbar CONFIG REQUIRED)
 find_package(nlohmann_json       CONFIG REQUIRED)
-find_package(unofficial-sqlite3  CONFIG REQUIRED)
+find_package(SQLite3  REQUIRED)
 
 # Generate buildinfo file
 configure_file("${CMAKE_SOURCE_DIR}/src/picotorrent/buildinfo.cpp.in" "${CMAKE_SOURCE_DIR}/src/picotorrent/buildinfo.cpp" @ONLY)
 
 # Debug flags
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" -ggdb -Og)
 
 # Release flags
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/DEBUG /INCREMENTAL:NO /MAP /OPT:REF /OPT:ICF")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "/DEBUG /INCREMENTAL:NO /MAP /OPT:REF /OPT:ICF")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" -march=nocona -msahf -mtune=generic -O2 -pipe -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong -Wp,-D__USE_MINGW_ANSI_STDIO=1)
+#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/DEBUG /INCREMENTAL:NO /MAP /OPT:REF /OPT:ICF")
+#set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "/DEBUG /INCREMENTAL:NO /MAP /OPT:REF /OPT:ICF")
 
 add_executable(
     PicoTorrent-coredb
@@ -78,7 +78,7 @@ target_link_libraries(
     PicoTorrent-coredb
     PRIVATE
     nlohmann_json::nlohmann_json
-    unofficial::sqlite3::sqlite3
+    SQLite::SQLite3
 )
 
 add_executable(
@@ -184,7 +184,7 @@ target_compile_definitions(
     -DPICO_WX_GIT_COMMITISH=${PICO_WX_GIT_COMMITISH}
 )
 
-target_compile_options(PicoTorrent PRIVATE /guard:cf /W4 /WX)
+#target_compile_options(PicoTorrent PRIVATE /guard:cf /W4 /WX)
 
 target_include_directories(
     PicoTorrent
@@ -232,7 +232,7 @@ target_link_libraries(
     # PQL
     PicoTorrentPQL
 
-    unofficial::sqlite3::sqlite3
+    SQLite::SQLite3
 )
 
 set_property(TARGET PicoTorrent PROPERTY ENABLE_EXPORTS 1)

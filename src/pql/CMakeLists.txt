@@ -4,8 +4,8 @@ set(THIRDPARTY_DIR ${CMAKE_BINARY_DIR}/runtime/thirdparty)
 set(UTFCPP_DIR ${THIRDPARTY_DIR}/utfcpp)
 ExternalProject_Add(
   utfcpp
-  GIT_REPOSITORY        "git://github.com/nemtrif/utfcpp"
-  GIT_TAG               "v3.1.1"
+  GIT_REPOSITORY        "https://github.com/nemtrif/utfcpp"
+  GIT_TAG               "v4.0.6"
   SOURCE_DIR            ${UTFCPP_DIR}
   UPDATE_DISCONNECTED   1
   CMAKE_ARGS            -DCMAKE_INSTALL_PREFIX=${UTFCPP_DIR}/install -Dgtest_force_shared_crt=ON
